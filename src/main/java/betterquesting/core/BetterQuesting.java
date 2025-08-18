@@ -21,8 +21,10 @@ import betterquesting.api.placeholders.ItemPlaceholder;
 import betterquesting.api.storage.BQ_Settings;
 import betterquesting.blocks.BlockObservationStation;
 import betterquesting.blocks.BlockSubmitStation;
+import betterquesting.blocks.BlockVendingMachine;
 import betterquesting.blocks.TileObservationStation;
 import betterquesting.blocks.TileSubmitStation;
+import betterquesting.blocks.TileVendingMachine;
 import betterquesting.client.CreativeTabQuesting;
 import betterquesting.commands.BQ_CommandAdmin;
 import betterquesting.commands.BQ_CommandDebug;
@@ -80,6 +82,7 @@ public class BetterQuesting {
 
     public static Block submitStation = new BlockSubmitStation();
     public static Block observationStation = new BlockObservationStation();
+    public static Block vendingMachine = new BlockVendingMachine();
     public static boolean isDuraDisplayLoaded = false;
 
     @EventHandler
@@ -109,6 +112,10 @@ public class BetterQuesting {
         GameRegistry.registerBlock(submitStation, "submit_station");
 
         GameRegistry.registerTileEntity(TileSubmitStation.class, "submit_station");
+
+        GameRegistry.registerBlock(vendingMachine, "vending_machine");
+
+        GameRegistry.registerTileEntity(TileVendingMachine.class, "vending_machine");
 
         GameRegistry.registerBlock(observationStation, "observation_station");
 
