@@ -22,7 +22,7 @@ public class QuestingAPI {
         if (key == null) {
             throw new NullPointerException("API key can not be NULL");
         } else if (api == null) {
-            throw new NullPointerException("Tried to registed NULL API");
+            throw new NullPointerException("Tried to register NULL API");
         } else if (apis.containsKey(key)) {
             throw new IllegalArgumentException("Key cannot be registered twice");
         }
