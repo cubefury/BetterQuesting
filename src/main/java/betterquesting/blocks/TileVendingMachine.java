@@ -5,9 +5,15 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 import betterquesting.core.BetterQuesting;
+
+import javax.annotation.Nonnull;
 
 public class TileVendingMachine extends TileEntity implements IInventory {
 
@@ -57,8 +63,7 @@ public class TileVendingMachine extends TileEntity implements IInventory {
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
-        return (owner == null || player.getUniqueID()
-            .equals(owner)) && player.getDistanceSq(this.xCoord, this.yCoord, this.zCoord) < 256;
+        return player.getDistanceSq(this.xCoord, this.yCoord, this.zCoord) < 256;
     }
 
     @Override
@@ -72,15 +77,9 @@ public class TileVendingMachine extends TileEntity implements IInventory {
         return false;
     }
 
-    public boolean isSetup() {
-        return owner != null;
-    }
-
     @Override
     public void updateEntity() {
-        if (worldObj.isRemote || !isSetup()) {
-            return;
-        }
+        return;
     }
 
 }
