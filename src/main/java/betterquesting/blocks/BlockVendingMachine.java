@@ -4,10 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -38,13 +35,13 @@ public class BlockVendingMachine extends BlockContainer {
      */
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX,
-                                    float hitY, float hitZ) {
+        float hitY, float hitZ) {
         if (!world.isRemote) {
             player.openGui(BetterQuesting.instance, 0, world, x, y, z);
         }
         return true;
     }
-    
+
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
         TileVendingMachine vendingMachine = (TileVendingMachine) world.getTileEntity(x, y, z);
