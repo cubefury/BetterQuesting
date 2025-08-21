@@ -48,6 +48,9 @@ public class NativeProps {
     public static final IPropertyType<Boolean> SIMULTANEOUS = new PropertyTypeBoolean(
         new ResourceLocation("betterquesting:simultaneous"),
         false);
+    public static final IPropertyType<Boolean> HAS_TRADE_UNLOCK = new PropertyTypeBoolean(
+        new ResourceLocation("betterquesting:tradeUnlock"),
+        false);
 
     public static final IPropertyType<EnumQuestVisibility> VISIBILITY = new PropertyTypeEnum<>(
         new ResourceLocation("betterquesting:visibility"),

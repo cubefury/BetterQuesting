@@ -53,8 +53,8 @@ public class QuestCache implements IExtendedEntityProperties {
     // Quests that need to be sent to the client to update progression (NOT for edits. Handle that elsewhere)
     private final HashSet<UUID> markedDirty = new HashSet<>();
 
-    // Quests that are already completed
-    private final HashSet<UUID> completedQuests = new HashSet<>();
+    // Quests with associated trades that are completed
+    private final HashSet<UUID> completedTradeQuests = new HashSet<>();
 
     @Override
     public void init(Entity entity, World world) {}
@@ -87,8 +87,8 @@ public class QuestCache implements IExtendedEntityProperties {
      * I don't think that it's currently necessary for this method to return a copy, but let's do so
      * anyway in case of future concurrency changes.
      */
-    public synchronized ImmutableSet<UUID> getCompletedQuests() {
-        return ImmutableSet.copyOf(completedQuests);
+    public synchronized ImmutableSet<UUID> getCompletedTradeQuests() {
+        return ImmutableSet.copyOf(completedTradeQuests);
     }
 
     public synchronized QResetTime[] getScheduledResets() // Already sorted by time
@@ -150,9 +150,15 @@ public class QuestCache implements IExtendedEntityProperties {
                                             // account for taskless quests
                 {
                     tmpActive.add(entry.getKey());
+                    if (entry.getValue().getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
+                        tmpCompleted.add(entry.getKey());
+                    }
                 } else if (ue != null) // These conditions only trigger after first completion
                 {
-                    tmpCompleted.add(entry.getKey());
+                    if (entry.getValue().getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
+                        tmpCompleted.add(entry.getKey());
+                    }
+
                     if (repeat >= 0 && entry.getValue()
                         .hasClaimed(uuid)) {
                         long altTime = ue.getLong("timestamp");
@@ -187,8 +193,8 @@ public class QuestCache implements IExtendedEntityProperties {
         autoClaims.clear();
         autoClaims.addAll(tmpAutoClaim);
 
-        completedQuests.clear();
-        completedQuests.addAll(tmpCompleted);
+        completedTradeQuests.clear();
+        completedTradeQuests.addAll(tmpCompleted);
 
         if (player instanceof EntityPlayerMP) {
             NetCacheSync.sendSync((EntityPlayerMP) player);
@@ -202,7 +208,7 @@ public class QuestCache implements IExtendedEntityProperties {
         tags.setTag("activeQuests", NBTConverter.UuidValueType.QUEST.writeIds(getActiveQuests()));
         tags.setTag("autoClaims", NBTConverter.UuidValueType.QUEST.writeIds(getPendingAutoClaims()));
         tags.setTag("markedDirty", NBTConverter.UuidValueType.QUEST.writeIds(getDirtyQuests()));
-        tags.setTag("completedQuests", NBTConverter.UuidValueType.QUEST.writeIds(getCompletedQuests()));
+        tags.setTag("completedTradeQuests", NBTConverter.UuidValueType.QUEST.writeIds(getCompletedTradeQuests()));
 
         NBTTagList tagSchedule = new NBTTagList();
         for (QResetTime entry : getScheduledResets()) {
@@ -220,13 +226,13 @@ public class QuestCache implements IExtendedEntityProperties {
         resetSchedule.clear();
         autoClaims.clear();
         markedDirty.clear();
-        completedQuests.clear();
+        completedTradeQuests.clear();
 
         visibleQuests.addAll(NBTConverter.UuidValueType.QUEST.readIds(nbt, "visibleQuests"));
         activeQuests.addAll(NBTConverter.UuidValueType.QUEST.readIds(nbt, "activeQuests"));
         autoClaims.addAll(NBTConverter.UuidValueType.QUEST.readIds(nbt, "autoClaims"));
         markedDirty.addAll(NBTConverter.UuidValueType.QUEST.readIds(nbt, "markedDirty"));
-        completedQuests.addAll(NBTConverter.UuidValueType.QUEST.readIds(nbt, "completedQuests"));
+        completedTradeQuests.addAll(NBTConverter.UuidValueType.QUEST.readIds(nbt, "completedTradeQuests"));
 
         NBTTagList tagList = nbt.getTagList("resetSchedule", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.tagCount(); i++) {
