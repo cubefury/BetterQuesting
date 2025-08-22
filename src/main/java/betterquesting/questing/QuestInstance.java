@@ -1,5 +1,6 @@
 package betterquesting.questing;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import bq_standard.vendingmachine.TradeGroup;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -58,6 +60,7 @@ public class QuestInstance implements IQuest {
     private final HashMap<UUID, NBTTagCompound> completeUsers = new HashMap<>();
     private Set<UUID> preRequisites = new HashSet<>();
     private HashMap<UUID, RequirementType> prereqTypes = new HashMap<>();
+    private final List<TradeGroup> trades = new ArrayList<>();
 
     private final PropertyContainer qInfo = new PropertyContainer();
 

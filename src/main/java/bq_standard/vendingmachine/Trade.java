@@ -3,7 +3,6 @@ package bq_standard.vendingmachine;
 import java.util.ArrayList;
 import java.util.List;
 
-import betterquesting.api.questing.vendingmachine.ITrade;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api.utils.JsonHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,12 +10,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 
-public class Trade implements ITrade {
+public class Trade {
     public final List<BigItemStack> fromItems = new ArrayList<>();
     public final List<BigItemStack> toItems = new ArrayList<>();
     public boolean ignoreNbt = true;
 
-    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         nbt.setBoolean("ignoreNBT", ignoreNbt);
 
@@ -35,7 +33,6 @@ public class Trade implements ITrade {
         return nbt;
     }
 
-    @Override
     public void readFromNBT(NBTTagCompound nbt) {
         ignoreNbt = nbt.getBoolean("ignoreNBT");
 
@@ -52,7 +49,6 @@ public class Trade implements ITrade {
         }
     }
 
-    @Override
     public void executeTrade(EntityPlayer player) {
     }
 }
