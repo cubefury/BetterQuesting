@@ -464,6 +464,8 @@ public class QuestInstance implements IQuest {
         return rewards;
     }
 
+    public List<TradeGroup> getTrades() { return trades; }
+
     @Nonnull
     @Override
     public Set<UUID> getRequirements() {
@@ -511,6 +513,13 @@ public class QuestInstance implements IQuest {
         }
         jObj.setTag("preRequisites", tagList);
 
+        NBTTagList tList = new NBTTagList();
+        for (TradeGroup tg : trades) {
+            NBTTagCompound tag = tg.writeToNBT(new NBTTagCompound());
+            tList.appendTag(tag);
+        }
+        jObj.setTag("trades", tList);
+
         return jObj;
     }
 
@@ -519,6 +528,14 @@ public class QuestInstance implements IQuest {
         this.qInfo.readFromNBT(jObj.getCompoundTag("properties"));
         this.tasks.readFromNBT(jObj.getTagList("tasks", 10), false);
         this.rewards.readFromNBT(jObj.getTagList("rewards", 10), false);
+
+        trades.clear();
+        NBTTagList tList = jObj.getTagList("trades", 10);
+        for (int i = 0; i < tList.tagCount(); i++) {
+            TradeGroup tg = new TradeGroup();
+            tg.readFromNBT(tList.getCompoundTagAt(i));
+            trades.add(tg);
+        }
 
         // The legacy storage format used array indices to link together two separate list tags,
         // one for prerequisites, and one for prerequisite tags.
@@ -573,6 +590,29 @@ public class QuestInstance implements IQuest {
         }
 
         this.setupProps();
+    }
+
+    public NBTTagList writeTradeStateToNBT(NBTTagList nbt) {
+        for (TradeGroup tg : trades) {
+            nbt.appendTag(tg.writeTradeStateToNBT(new NBTTagCompound()));
+        }
+        return nbt;
+    }
+
+    // Best effort merge, to account for updates changing number of available tradegroups.
+    // There's still a bug where if we swap the order of the tradegroups, it'll
+    // swap their cooldowns as well.
+    // Given how infrequent changes to tradegroups will likely be, the remedy seem excessive. Fix?
+    // TODO: Fix by making tradegroups have unique ids - this is quite the refactor
+    public void readTradeStateFromNBT(NBTTagList nbt) {
+        if (nbt == null) {
+            return;
+        }
+        int iterSize = Math.min(trades.size(), nbt.tagCount());
+        for (int i = 0; i < iterSize; i++) {
+            NBTTagCompound entry = (NBTTagCompound) nbt.getCompoundTagAt(i);
+            trades.get(i).readTradeStateFromNBT(entry);
+        }
     }
 
     @Override

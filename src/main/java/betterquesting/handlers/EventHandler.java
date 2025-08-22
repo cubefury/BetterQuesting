@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import betterquesting.api.events.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -43,10 +44,6 @@ import com.google.common.util.concurrent.ListenableFutureTask;
 
 import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.client.gui.misc.INeedsRefresh;
-import betterquesting.api.events.BQLivingUpdateEvent;
-import betterquesting.api.events.DatabaseEvent;
-import betterquesting.api.events.MarkDirtyPlayerEvent;
-import betterquesting.api.events.QuestEvent;
 import betterquesting.api.events.QuestEvent.Type;
 import betterquesting.api.placeholders.FluidPlaceholder;
 import betterquesting.api.properties.NativeProps;
@@ -573,5 +570,10 @@ public class EventHandler {
     @SubscribeEvent
     public void onMarkDirtyPlayer(MarkDirtyPlayerEvent event) {
         SaveLoadHandler.INSTANCE.addDirtyPlayers(event.getDirtyPlayerIDs());
+    }
+
+    @SubscribeEvent
+    public void onMarkDirtyTrade(MarkDirtyTradeEvent event) {
+        SaveLoadHandler.INSTANCE.markHasDirtyTrades();
     }
 }

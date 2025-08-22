@@ -1,14 +1,7 @@
 package betterquesting.handlers;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -18,6 +11,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.JsonObject;
@@ -49,9 +43,10 @@ public class SaveLoadHandler {
 
     private boolean hasUpdate = false;
     private boolean isDirty = false;
+    private boolean hasDirtyTrades = false;
 
     private File fileDatabase = null, fileProgress = null, dirProgress = null, fileParties = null, fileLives = null,
-        fileNames = null;
+        fileNames = null, fileTrades = null;
 
     private final Set<UUID> dirtyPlayers = new ConcurrentSet<>();
 
@@ -74,6 +69,8 @@ public class SaveLoadHandler {
     public void addDirtyPlayers(Collection<UUID> players) {
         this.dirtyPlayers.addAll(players);
     }
+
+    public void markHasDirtyTrades() { this.hasDirtyTrades = true; }
 
     public void loadDatabases(MinecraftServer server) {
         hasUpdate = false;
@@ -99,6 +96,7 @@ public class SaveLoadHandler {
         fileParties = new File(BQ_Settings.curWorldDir, "QuestingParties.json");
         fileLives = new File(BQ_Settings.curWorldDir, "LifeDatabase.json");
         fileNames = new File(BQ_Settings.curWorldDir, "NameCache.json");
+        fileTrades = new File(BQ_Settings.curWorldDir, "VendingMachineTradeState.json");
 
         loadConfig();
 
@@ -109,6 +107,8 @@ public class SaveLoadHandler {
         loadNames();
 
         loadLives();
+
+        loadTrades();
 
         BetterQuesting.logger.info("Loaded " + QuestDatabase.INSTANCE.size() + " quests");
         BetterQuesting.logger.info("Loaded " + QuestLineDatabase.INSTANCE.size() + " quest lines");
@@ -132,6 +132,10 @@ public class SaveLoadHandler {
         allFutures.add(saveNames());
 
         allFutures.add(saveLives());
+
+        if (hasDirtyTrades) {
+            allFutures.add(saveTrades());
+        }
 
         MinecraftForge.EVENT_BUS.post(new DatabaseEvent.Save(DBType.ALL));
 
@@ -230,6 +234,9 @@ public class SaveLoadHandler {
                 JsonHelper.CopyPaste(
                     fileLives,
                     new File(BQ_Settings.curWorldDir + "/backup/" + fsVer, "LifeDatabase_backup_" + fsVer + ".json"));
+                JsonHelper.CopyPaste(
+                        fileTrades,
+                        new File(BQ_Settings.curWorldDir + "/backup/" + fsVer, "VendingMachineTradeState_backup_" + fsVer + ".json"));
             }
 
             QuestCommandDefaults.loadLegacy(null, null, fileDatabase, true);
@@ -312,6 +319,63 @@ public class SaveLoadHandler {
                 .getVersion());
 
         return JsonHelper.WriteToFile2(fileDatabase, out -> NBTConverter.NBTtoJSON_Compound(json, out, true));
+    }
+
+    private Future<Void> saveTrades() {
+        if (fileTrades != null && fileTrades.exists()) {
+            String backupName = fileTrades.getName()
+                    .replace(".json", ".backup.json");
+            try {
+                FileUtils.moveFile(fileTrades, new File(fileTrades.getParentFile(), backupName));
+                // Only remove the file if the backup was successful
+                FileUtils.forceDelete(fileTrades);
+            } catch (Exception e) {
+                BetterQuesting.logger.warn("Could not move old vending machine trade state out of the way {}",
+                        backupName, e);
+            }
+        }
+
+        NBTTagList allTradeData = new NBTTagList();
+
+        for (Map.Entry<UUID, IQuest> entry : QuestDatabase.INSTANCE.entrySet()) {
+            IQuest iquest = entry.getValue();
+            if (iquest instanceof QuestInstance) {
+                QuestInstance qi = (QuestInstance) iquest;
+                if (qi.getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
+                    NBTTagCompound trade = new NBTTagCompound();
+                    trade.setString("quest_id", entry.getKey().toString());
+                    trade.setTag("trade_groups", qi.writeTradeStateToNBT(new NBTTagList()));
+                    allTradeData.appendTag(trade);
+                }
+            }
+        }
+
+        NBTTagCompound compoundWrapper = new NBTTagCompound();
+        compoundWrapper.setTag("data", allTradeData);
+        Future<Void> result = JsonHelper.WriteToFile2(fileTrades,
+                out -> NBTConverter.NBTtoJSON_Compound(compoundWrapper, out, true));
+
+        hasDirtyTrades = false;
+        return result;
+    }
+
+
+    private void loadTrades() {
+        if (fileTrades.exists()) {
+            JsonObject json = JsonHelper.ReadFromFile(fileTrades);
+
+            NBTTagList allTradeData = NBTConverter.JSONtoNBT_Object(json, new NBTTagCompound(), true)
+                    .getTagList("data", Constants.NBT.TAG_COMPOUND);
+
+            QuestDatabase questDB = QuestDatabase.INSTANCE;
+            for (int i = 0; i < allTradeData.tagCount(); i++) {
+                NBTTagCompound qi_data = allTradeData.getCompoundTagAt(i);
+                IQuest iQuest = questDB.get(UUID.fromString(qi_data.getString("quest_id")));
+                if (iQuest instanceof QuestInstance) {
+                    ((QuestInstance) iQuest).readTradeStateFromNBT(qi_data.getTagList("trade_groups", Constants.NBT.TAG_COMPOUND));
+                }
+            }
+        }
     }
 
     private List<Future<Void>> saveProgress() {
