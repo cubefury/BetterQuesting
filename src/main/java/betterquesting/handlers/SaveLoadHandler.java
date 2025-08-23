@@ -10,8 +10,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-
 import net.minecraftforge.common.util.Constants;
+
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.JsonObject;
@@ -70,7 +70,9 @@ public class SaveLoadHandler {
         this.dirtyPlayers.addAll(players);
     }
 
-    public void markHasDirtyTrades() { this.hasDirtyTrades = true; }
+    public void markHasDirtyTrades() {
+        this.hasDirtyTrades = true;
+    }
 
     public void loadDatabases(MinecraftServer server) {
         hasUpdate = false;
@@ -235,8 +237,10 @@ public class SaveLoadHandler {
                     fileLives,
                     new File(BQ_Settings.curWorldDir + "/backup/" + fsVer, "LifeDatabase_backup_" + fsVer + ".json"));
                 JsonHelper.CopyPaste(
-                        fileTrades,
-                        new File(BQ_Settings.curWorldDir + "/backup/" + fsVer, "VendingMachineTradeState_backup_" + fsVer + ".json"));
+                    fileTrades,
+                    new File(
+                        BQ_Settings.curWorldDir + "/backup/" + fsVer,
+                        "VendingMachineTradeState_backup_" + fsVer + ".json"));
             }
 
             QuestCommandDefaults.loadLegacy(null, null, fileDatabase, true);
@@ -324,14 +328,14 @@ public class SaveLoadHandler {
     private Future<Void> saveTrades() {
         if (fileTrades != null && fileTrades.exists()) {
             String backupName = fileTrades.getName()
-                    .replace(".json", ".backup.json");
+                .replace(".json", ".backup.json");
             try {
                 FileUtils.moveFile(fileTrades, new File(fileTrades.getParentFile(), backupName));
                 // Only remove the file if the backup was successful
                 FileUtils.forceDelete(fileTrades);
             } catch (Exception e) {
-                BetterQuesting.logger.warn("Could not move old vending machine trade state out of the way {}",
-                        backupName, e);
+                BetterQuesting.logger
+                    .warn("Could not move old vending machine trade state out of the way {}", backupName, e);
             }
         }
 
@@ -343,7 +347,10 @@ public class SaveLoadHandler {
                 QuestInstance qi = (QuestInstance) iquest;
                 if (qi.getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
                     NBTTagCompound trade = new NBTTagCompound();
-                    trade.setString("quest_id", entry.getKey().toString());
+                    trade.setString(
+                        "quest_id",
+                        entry.getKey()
+                            .toString());
                     trade.setTag("trade_groups", qi.writeTradeStateToNBT(new NBTTagList()));
                     allTradeData.appendTag(trade);
                 }
@@ -352,27 +359,27 @@ public class SaveLoadHandler {
 
         NBTTagCompound compoundWrapper = new NBTTagCompound();
         compoundWrapper.setTag("data", allTradeData);
-        Future<Void> result = JsonHelper.WriteToFile2(fileTrades,
-                out -> NBTConverter.NBTtoJSON_Compound(compoundWrapper, out, true));
+        Future<Void> result = JsonHelper
+            .WriteToFile2(fileTrades, out -> NBTConverter.NBTtoJSON_Compound(compoundWrapper, out, true));
 
         hasDirtyTrades = false;
         return result;
     }
-
 
     private void loadTrades() {
         if (fileTrades.exists()) {
             JsonObject json = JsonHelper.ReadFromFile(fileTrades);
 
             NBTTagList allTradeData = NBTConverter.JSONtoNBT_Object(json, new NBTTagCompound(), true)
-                    .getTagList("data", Constants.NBT.TAG_COMPOUND);
+                .getTagList("data", Constants.NBT.TAG_COMPOUND);
 
             QuestDatabase questDB = QuestDatabase.INSTANCE;
             for (int i = 0; i < allTradeData.tagCount(); i++) {
                 NBTTagCompound qi_data = allTradeData.getCompoundTagAt(i);
                 IQuest iQuest = questDB.get(UUID.fromString(qi_data.getString("quest_id")));
                 if (iQuest instanceof QuestInstance) {
-                    ((QuestInstance) iQuest).readTradeStateFromNBT(qi_data.getTagList("trade_groups", Constants.NBT.TAG_COMPOUND));
+                    ((QuestInstance) iQuest)
+                        .readTradeStateFromNBT(qi_data.getTagList("trade_groups", Constants.NBT.TAG_COMPOUND));
                 }
             }
         }

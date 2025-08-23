@@ -150,12 +150,14 @@ public class QuestCache implements IExtendedEntityProperties {
                                             // account for taskless quests
                 {
                     tmpActive.add(entry.getKey());
-                    if (entry.getValue().getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
+                    if (entry.getValue()
+                        .getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
                         tmpCompleted.add(entry.getKey());
                     }
                 } else if (ue != null) // These conditions only trigger after first completion
                 {
-                    if (entry.getValue().getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
+                    if (entry.getValue()
+                        .getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
                         tmpCompleted.add(entry.getKey());
                     }
 

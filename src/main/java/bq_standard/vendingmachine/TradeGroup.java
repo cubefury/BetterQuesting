@@ -1,20 +1,21 @@
 package bq_standard.vendingmachine;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants;
+
+import org.apache.logging.log4j.Level;
 
 import betterquesting.api2.utils.DirtyTradeMarker;
 import betterquesting.api2.utils.ParticipantInfo;
 import betterquesting.core.BetterQuesting;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-
-import net.minecraftforge.common.util.Constants;
-import org.apache.logging.log4j.Level;
 
 public class TradeGroup {
 
@@ -63,7 +64,7 @@ public class TradeGroup {
     public void setTradeInfo(UUID uuid, NBTTagCompound nbt) {
         if (uuid == null) return;
 
-        synchronized(lastClaimed) {
+        synchronized (lastClaimed) {
             if (nbt == null) {
                 lastClaimed.remove(uuid);
             } else {
@@ -84,8 +85,7 @@ public class TradeGroup {
             if (entry == null) {
                 return true;
             }
-            return !hasCooldown ||
-                    (currentTime - entry.getLong("timestamp")) / 1000 >= this.cooldown;
+            return !hasCooldown || (currentTime - entry.getLong("timestamp")) / 1000 >= this.cooldown;
         }
     }
 
@@ -120,9 +120,15 @@ public class TradeGroup {
         NBTTagList pList = new NBTTagList();
         synchronized (lastClaimed) {
             for (Entry<UUID, NBTTagCompound> entry : lastClaimed.entrySet()) {
-                NBTTagCompound playerEntry= new NBTTagCompound();
-                playerEntry.setString("uuid", entry.getKey().toString());
-                playerEntry.setLong("last_claimed", entry.getValue().getLong("timestamp"));
+                NBTTagCompound playerEntry = new NBTTagCompound();
+                playerEntry.setString(
+                    "uuid",
+                    entry.getKey()
+                        .toString());
+                playerEntry.setLong(
+                    "last_claimed",
+                    entry.getValue()
+                        .getLong("timestamp"));
                 pList.appendTag(playerEntry);
             }
         }
@@ -135,15 +141,15 @@ public class TradeGroup {
         synchronized (lastClaimed) {
             lastClaimed.clear();
             for (int i = 0; i < pList.tagCount(); i++) {
-                NBTTagCompound entry = (NBTTagCompound) pList.getCompoundTagAt(i).copy();
+                NBTTagCompound entry = (NBTTagCompound) pList.getCompoundTagAt(i)
+                    .copy();
 
                 try {
                     NBTTagCompound pData = new NBTTagCompound();
                     pData.setLong("timestamp", entry.getLong("last_claimed"));
-                    lastClaimed.put(UUID.fromString(entry.getString("uuid")),
-                            pData);
+                    lastClaimed.put(UUID.fromString(entry.getString("uuid")), pData);
                 } catch (Exception e) {
-                    BetterQuesting.logger.log(Level.ERROR,"Unable to load player UUID for trade", e);
+                    BetterQuesting.logger.log(Level.ERROR, "Unable to load player UUID for trade", e);
                 }
             }
         }

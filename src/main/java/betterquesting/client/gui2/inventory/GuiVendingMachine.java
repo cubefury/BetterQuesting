@@ -1,13 +1,17 @@
 package betterquesting.client.gui2.inventory;
 
-import betterquesting.api.questing.IQuest;
-import betterquesting.questing.QuestDatabase;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.InventoryPlayer;
 
 import org.lwjgl.input.Keyboard;
 
 import betterquesting.api.client.gui.misc.INeedsRefresh;
+import betterquesting.api.questing.IQuest;
 import betterquesting.api2.cache.QuestCache;
 import betterquesting.api2.client.gui.GuiContainerCanvas;
 import betterquesting.api2.client.gui.misc.GuiAlign;
@@ -17,11 +21,7 @@ import betterquesting.api2.client.gui.panels.CanvasTextured;
 import betterquesting.api2.client.gui.panels.IGuiCanvas;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.blocks.TileVendingMachine;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import betterquesting.questing.QuestDatabase;
 
 public class GuiVendingMachine extends GuiContainerCanvas implements INeedsRefresh {
 
@@ -64,7 +64,7 @@ public class GuiVendingMachine extends GuiContainerCanvas implements INeedsRefre
         QuestCache qc = (QuestCache) mc.thePlayer.getExtendedProperties(QuestCache.LOC_QUEST_CACHE.toString());
         if (qc != null) {
             quests.addAll(
-                QuestDatabase.INSTANCE.filterKeys(qc.getCompletedQuests())
+                QuestDatabase.INSTANCE.filterKeys(qc.getCompletedTradeQuests())
                     .entrySet());
         }
     }

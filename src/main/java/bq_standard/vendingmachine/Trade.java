@@ -3,14 +3,16 @@ package bq_standard.vendingmachine;
 import java.util.ArrayList;
 import java.util.List;
 
-import betterquesting.api.utils.BigItemStack;
-import betterquesting.api.utils.JsonHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 
+import betterquesting.api.utils.BigItemStack;
+import betterquesting.api.utils.JsonHelper;
+
 public class Trade {
+
     public final List<BigItemStack> fromItems = new ArrayList<>();
     public final List<BigItemStack> toItems = new ArrayList<>();
     public boolean ignoreInputsNbt = true;
@@ -49,6 +51,5 @@ public class Trade {
         }
     }
 
-    public void executeTrade(EntityPlayer player) {
-    }
+    public void executeTrade(EntityPlayer player) {}
 }

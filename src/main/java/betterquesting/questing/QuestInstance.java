@@ -14,7 +14,6 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import bq_standard.vendingmachine.TradeGroup;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -50,6 +49,7 @@ import betterquesting.questing.tasks.TaskStorage;
 import betterquesting.storage.PropertyContainer;
 import betterquesting.storage.QuestSettings;
 import bq_standard.rewards.RewardChoice;
+import bq_standard.vendingmachine.TradeGroup;
 import drethic.questbook.config.QBConfig;
 
 public class QuestInstance implements IQuest {
@@ -464,7 +464,9 @@ public class QuestInstance implements IQuest {
         return rewards;
     }
 
-    public List<TradeGroup> getTrades() { return trades; }
+    public List<TradeGroup> getTrades() {
+        return trades;
+    }
 
     @Nonnull
     @Override
@@ -611,7 +613,8 @@ public class QuestInstance implements IQuest {
         int iterSize = Math.min(trades.size(), nbt.tagCount());
         for (int i = 0; i < iterSize; i++) {
             NBTTagCompound entry = (NBTTagCompound) nbt.getCompoundTagAt(i);
-            trades.get(i).readTradeStateFromNBT(entry);
+            trades.get(i)
+                .readTradeStateFromNBT(entry);
         }
     }
 
