@@ -31,7 +31,6 @@ import betterquesting.api.storage.BQ_Settings;
 import betterquesting.api.utils.NBTConverter;
 import betterquesting.network.handlers.NetCacheSync;
 import betterquesting.questing.QuestDatabase;
-import betterquesting.questing.QuestInstance;
 
 public class QuestCache implements IExtendedEntityProperties {
 
@@ -151,12 +150,16 @@ public class QuestCache implements IExtendedEntityProperties {
                                             // account for taskless quests
                 {
                     tmpActive.add(entry.getKey());
-                    if (entry.getValue().getTradeGroups().isEmpty()) {
+                    if (entry.getValue()
+                        .getTradeGroups()
+                        .isEmpty()) {
                         tmpCompleted.add(entry.getKey());
                     }
                 } else if (ue != null) // These conditions only trigger after first completion
                 {
-                    if (entry.getValue().getTradeGroups().isEmpty()) {
+                    if (entry.getValue()
+                        .getTradeGroups()
+                        .isEmpty()) {
                         tmpCompleted.add(entry.getKey());
                     }
 

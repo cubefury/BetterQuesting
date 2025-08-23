@@ -8,8 +8,6 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import betterquesting.api2.storage.INBTTradeState;
-import bq_standard.vendingmachine.TradeGroup;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -22,10 +20,12 @@ import betterquesting.api2.client.gui.themes.presets.PresetIcon;
 import betterquesting.api2.storage.IDatabaseNBT;
 import betterquesting.api2.storage.INBTProgress;
 import betterquesting.api2.storage.INBTSaveLoad;
+import betterquesting.api2.storage.INBTTradeState;
 import betterquesting.api2.utils.QuestTranslation;
+import bq_standard.vendingmachine.TradeGroup;
 
-public interface IQuest extends INBTSaveLoad<NBTTagCompound>, INBTProgress<NBTTagCompound>,
-    INBTTradeState<NBTTagList>, IPropertyContainer {
+public interface IQuest
+    extends INBTSaveLoad<NBTTagCompound>, INBTProgress<NBTTagCompound>, INBTTradeState<NBTTagList>, IPropertyContainer {
 
     EnumQuestState getState(EntityPlayer player);
 
