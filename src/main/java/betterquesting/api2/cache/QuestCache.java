@@ -151,21 +151,13 @@ public class QuestCache implements IExtendedEntityProperties {
                                             // account for taskless quests
                 {
                     tmpActive.add(entry.getKey());
-                    if (entry.getValue() instanceof QuestInstance) {
-                        QuestInstance qi = (QuestInstance) entry.getValue();
-                        if (!qi.getTradeGroups()
-                            .isEmpty()) {
-                            tmpCompleted.add(entry.getKey());
-                        }
+                    if (entry.getValue().getTradeGroups().isEmpty()) {
+                        tmpCompleted.add(entry.getKey());
                     }
                 } else if (ue != null) // These conditions only trigger after first completion
                 {
-                    if (entry.getValue() instanceof QuestInstance) {
-                        QuestInstance qi = (QuestInstance) entry.getValue();
-                        if (!qi.getTradeGroups()
-                            .isEmpty()) {
-                            tmpCompleted.add(entry.getKey());
-                        }
+                    if (entry.getValue().getTradeGroups().isEmpty()) {
+                        tmpCompleted.add(entry.getKey());
                     }
 
                     if (repeat >= 0 && entry.getValue()

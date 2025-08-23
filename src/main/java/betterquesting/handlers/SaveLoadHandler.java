@@ -351,19 +351,17 @@ public class SaveLoadHandler {
 
         for (Map.Entry<UUID, IQuest> entry : QuestDatabase.INSTANCE.entrySet()) {
             IQuest iquest = entry.getValue();
-            if (iquest instanceof QuestInstance) {
-                QuestInstance qi = (QuestInstance) iquest;
-                if (!qi.getTradeGroups()
-                    .isEmpty()) {
-                    NBTTagCompound trade = new NBTTagCompound();
-                    trade.setString(
-                        "quest_id",
-                        entry.getKey()
-                            .toString());
-                    trade.setTag("trade_groups", qi.writeTradeStateToNBT(new NBTTagList()));
-                    allTradeData.appendTag(trade);
-                }
+            if (!iquest.getTradeGroups()
+                .isEmpty()) {
+                NBTTagCompound trade = new NBTTagCompound();
+                trade.setString(
+                    "quest_id",
+                    entry.getKey()
+                        .toString());
+                trade.setTag("trade_groups", iquest.writeTradeStateToNBT(new NBTTagList()));
+                allTradeData.appendTag(trade);
             }
+
         }
 
         NBTTagCompound compoundWrapper = new NBTTagCompound();

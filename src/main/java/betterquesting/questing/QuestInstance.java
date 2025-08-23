@@ -462,6 +462,7 @@ public class QuestInstance implements IQuest {
         return rewards;
     }
 
+    @Override
     public List<TradeGroup> getTradeGroups() {
         return tradeGroups;
     }
@@ -592,6 +593,7 @@ public class QuestInstance implements IQuest {
         this.setupProps();
     }
 
+    @Override
     public NBTTagList writeTradeStateToNBT(NBTTagList nbt) {
         for (TradeGroup tg : tradeGroups) {
             nbt.appendTag(tg.writeTradeStateToNBT(new NBTTagCompound()));
@@ -604,6 +606,7 @@ public class QuestInstance implements IQuest {
     // swap their cooldowns as well.
     // Given how infrequent changes to tradegroups will likely be, the remedy seem excessive. Fix?
     // TODO: Fix by making tradegroups have unique ids - this is quite the refactor
+    @Override
     public void readTradeStateFromNBT(NBTTagList nbt) {
         if (nbt == null) {
             return;

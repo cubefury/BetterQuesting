@@ -1,5 +1,6 @@
 package betterquesting.api.questing;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -7,6 +8,8 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import betterquesting.api2.storage.INBTTradeState;
+import bq_standard.vendingmachine.TradeGroup;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -21,7 +24,8 @@ import betterquesting.api2.storage.INBTProgress;
 import betterquesting.api2.storage.INBTSaveLoad;
 import betterquesting.api2.utils.QuestTranslation;
 
-public interface IQuest extends INBTSaveLoad<NBTTagCompound>, INBTProgress<NBTTagCompound>, IPropertyContainer {
+public interface IQuest extends INBTSaveLoad<NBTTagCompound>, INBTProgress<NBTTagCompound>,
+    INBTTradeState<NBTTagList>, IPropertyContainer {
 
     EnumQuestState getState(EntityPlayer player);
 
@@ -81,6 +85,8 @@ public interface IQuest extends INBTSaveLoad<NBTTagCompound>, INBTProgress<NBTTa
     IDatabaseNBT<ITask, NBTTagList, NBTTagList> getTasks();
 
     IDatabaseNBT<IReward, NBTTagList, NBTTagList> getRewards();
+
+    List<TradeGroup> getTradeGroups();
 
     /** Returns a mutable set. Changes made to the returned set will be reflected in the quest! */
     @Nonnull
