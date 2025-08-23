@@ -35,7 +35,7 @@ public class TradeGroup {
         for (Trade trade : this.trades) {
             tradeArray.appendTag(trade.writeToNBT(new NBTTagCompound()));
         }
-        nbt.setTag("trades", tradeArray);
+        nbt.setTag("tradeGroups", tradeArray);
 
         return nbt;
     }
@@ -45,7 +45,7 @@ public class TradeGroup {
         cooldown = nbt.getInteger("cooldown");
 
         trades.clear();
-        NBTTagList tList = nbt.getTagList("trades", Constants.NBT.TAG_COMPOUND);
+        NBTTagList tList = nbt.getTagList("tradeGroups", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tList.tagCount(); i++) {
             Trade ti = new Trade();
             ti.readFromNBT(tList.getCompoundTagAt(i));

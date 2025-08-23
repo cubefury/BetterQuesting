@@ -13,10 +13,10 @@ import net.minecraftforge.common.util.Constants;
 public class Trade {
     public final List<BigItemStack> fromItems = new ArrayList<>();
     public final List<BigItemStack> toItems = new ArrayList<>();
-    public boolean ignoreNbt = true;
+    public boolean ignoreInputsNbt = true;
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        nbt.setBoolean("ignoreNBT", ignoreNbt);
+        nbt.setBoolean("ignoreInputsNBT", ignoreInputsNbt);
 
         NBTTagList fromItemsArray = new NBTTagList();
         for (BigItemStack stack : this.fromItems) {
@@ -34,7 +34,7 @@ public class Trade {
     }
 
     public void readFromNBT(NBTTagCompound nbt) {
-        ignoreNbt = nbt.getBoolean("ignoreNBT");
+        ignoreInputsNbt = nbt.getBoolean("ignoreInputsNBT");
 
         fromItems.clear();
         toItems.clear();
