@@ -10,6 +10,11 @@ import net.minecraftforge.common.util.Constants;
 
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api.utils.JsonHelper;
+import betterquesting.api2.client.gui.misc.IGuiRect;
+import betterquesting.api2.client.gui.panels.IGuiPanel;
+import bq_standard.client.gui.vendingmachine.PanelQBTrade;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class Trade {
 
@@ -52,4 +57,9 @@ public class Trade {
     }
 
     public void executeTrade(EntityPlayer player) {}
+
+    @SideOnly(Side.CLIENT)
+    public IGuiPanel getTradeGui(IGuiRect rect) {
+        return new PanelQBTrade(rect, this);
+    }
 }

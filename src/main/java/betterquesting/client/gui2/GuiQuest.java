@@ -55,6 +55,8 @@ import betterquesting.api2.utils.QuestTranslation;
 import betterquesting.client.gui2.GuiQuestLines.ScrollPosition;
 import betterquesting.network.handlers.NetQuestAction;
 import betterquesting.questing.QuestDatabase;
+import bq_standard.vendingmachine.Trade;
+import bq_standard.vendingmachine.TradeGroup;
 
 public class GuiQuest extends GuiScreenCanvas implements IPEventListener, INeedsRefresh {
 
@@ -188,18 +190,23 @@ public class GuiQuest extends GuiScreenCanvas implements IPEventListener, INeeds
         cvBackground.addPanel(cvInner);
 
         if (quest.getRewards()
-            .size() > 0) {
+            .size() > 0
+            || !quest.getTradeGroups()
+                .isEmpty()) {
             refreshDescPanel(true);
 
-            btnClaim = new PanelButton(
-                new GuiTransform(new Vector4f(0F, 1F, 0.5F, 1F), new GuiPadding(0, -16, 8, 0), 0),
-                6,
-                QuestTranslation.translate("betterquesting.btn.claim"));
-            btnClaim.setActive(false);
-            cvInner.addPanel(btnClaim);
+            if (quest.getRewards()
+                .size() > 0) { // only show claim button if there are rewards to claim
+                btnClaim = new PanelButton(
+                    new GuiTransform(new Vector4f(0F, 1F, 0.5F, 1F), new GuiPadding(0, -16, 8, 0), 0),
+                    6,
+                    QuestTranslation.translate("betterquesting.btn.claim"));
+                btnClaim.setActive(false);
+                cvInner.addPanel(btnClaim);
 
-            rectReward = new GuiTransform(new Vector4f(0F, 0.5F, 0.5F, 1F), new GuiPadding(0, 0, 8, 16), 0);
-            rectReward.setParent(cvInner.getTransform());
+                rectReward = new GuiTransform(new Vector4f(0F, 0.5F, 0.5F, 1F), new GuiPadding(0, 0, 8, 16), 0);
+                rectReward.setParent(cvInner.getTransform());
+            }
 
             refreshRewardPanel();
         } else {
@@ -331,6 +338,7 @@ public class GuiQuest extends GuiScreenCanvas implements IPEventListener, INeeds
         }
     }
 
+    // Vending machine unlocks also display here
     private void refreshRewardPanel() {
         if (pnReward != null) {
             cvInner.removePanel(pnReward);
@@ -387,6 +395,44 @@ public class GuiQuest extends GuiScreenCanvas implements IPEventListener, INeeds
                 tempCanvas.addPanel(rewardGui);
                 yOffset += tempCanvas.getTransform()
                     .getHeight();
+            }
+        }
+
+        if (!quest.getTradeGroups()
+            .isEmpty()) {
+            PanelTextBox titleTradeUnlock = new PanelTextBox(
+                new GuiTransform(new Vector4f(), 0, yOffset, rectReward.getWidth(), 12, 0),
+                QuestTranslation.translate("bq_standard.trade_unlock"));
+            titleTradeUnlock.setColor(PresetColor.TEXT_HEADER.getColor())
+                .setAlignment(1);
+            titleTradeUnlock.setEnabled(true);
+            csReward.addPanel(titleTradeUnlock);
+            yOffset += 12;
+            for (TradeGroup tg : quest.getTradeGroups()) {
+                // If we want to show tradegroups visually to players, here would
+                // be the place to add another wrapper per trade group
+                for (Trade trade : tg.trades) {
+                    IGuiPanel tradeGui = trade.getTradeGui(
+                        new GuiTransform(GuiAlign.FULL_BOX, 0, 0, rectReward.getWidth(), rectReward.getHeight(), 111));
+                    if (tradeGui != null) {
+                        tradeGui.initPanel();
+                        CanvasEmpty tempCanvas = new CanvasEmpty(
+                            new GuiTransform(
+                                GuiAlign.TOP_LEFT,
+                                0,
+                                yOffset,
+                                rectReward.getWidth(),
+                                tradeGui.getTransform()
+                                    .getHeight()
+                                    - tradeGui.getTransform()
+                                        .getY(),
+                                1));
+                        csReward.addPanel(tempCanvas);
+                        tempCanvas.addPanel(tradeGui);
+                        yOffset += tempCanvas.getTransform()
+                            .getHeight();
+                    }
+                }
             }
         }
 
@@ -477,8 +523,8 @@ public class GuiQuest extends GuiScreenCanvas implements IPEventListener, INeeds
         updateButtons();
     }
 
-    private void refreshDescPanel(boolean hasReward) {
-        if (hasReward) {
+    private void refreshDescPanel(boolean hasRewardOrTradeUnlock) {
+        if (hasRewardOrTradeUnlock) {
             csDesc = new CanvasScrolling(
                 new GuiTransform(new Vector4f(0F, 0F, 0.5F, 0.5F), new GuiPadding(0, 0, 16, 16), 0));
         } else {
@@ -488,7 +534,7 @@ public class GuiQuest extends GuiScreenCanvas implements IPEventListener, INeeds
         addQuestDescPanels();
 
         PanelVScrollBar paDescScroll;
-        if (hasReward) {
+        if (hasRewardOrTradeUnlock) {
             paDescScroll = new PanelVScrollBar(
                 new GuiTransform(
                     GuiAlign.quickAnchor(GuiAlign.TOP_CENTER, GuiAlign.MID_CENTER),
