@@ -345,7 +345,8 @@ public class SaveLoadHandler {
             IQuest iquest = entry.getValue();
             if (iquest instanceof QuestInstance) {
                 QuestInstance qi = (QuestInstance) iquest;
-                if (qi.getProperty(NativeProps.HAS_TRADE_UNLOCK)) {
+                if (!qi.getTrades()
+                    .isEmpty()) {
                     NBTTagCompound trade = new NBTTagCompound();
                     trade.setString(
                         "quest_id",

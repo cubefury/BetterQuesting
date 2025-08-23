@@ -78,8 +78,6 @@ public class QuestInstance implements IQuest {
         setupValue(NativeProps.SOUND_UPDATE);
         // setupValue(NativeProps.SOUND_UNLOCK);
 
-        setupValue(NativeProps.HAS_TRADE_UNLOCK, false);
-
         setupValue(NativeProps.LOGIC_QUEST, EnumLogic.AND);
         setupValue(NativeProps.LOGIC_TASK, EnumLogic.AND);
 
