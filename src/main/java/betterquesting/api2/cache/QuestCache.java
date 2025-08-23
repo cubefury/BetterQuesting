@@ -153,7 +153,7 @@ public class QuestCache implements IExtendedEntityProperties {
                     tmpActive.add(entry.getKey());
                     if (entry.getValue() instanceof QuestInstance) {
                         QuestInstance qi = (QuestInstance) entry.getValue();
-                        if (!qi.getTrades()
+                        if (!qi.getTradeGroups()
                             .isEmpty()) {
                             tmpCompleted.add(entry.getKey());
                         }
@@ -162,7 +162,7 @@ public class QuestCache implements IExtendedEntityProperties {
                 {
                     if (entry.getValue() instanceof QuestInstance) {
                         QuestInstance qi = (QuestInstance) entry.getValue();
-                        if (!qi.getTrades()
+                        if (!qi.getTradeGroups()
                             .isEmpty()) {
                             tmpCompleted.add(entry.getKey());
                         }

@@ -60,7 +60,7 @@ public class QuestInstance implements IQuest {
     private final HashMap<UUID, NBTTagCompound> completeUsers = new HashMap<>();
     private Set<UUID> preRequisites = new HashSet<>();
     private HashMap<UUID, RequirementType> prereqTypes = new HashMap<>();
-    private final List<TradeGroup> trades = new ArrayList<>();
+    private final List<TradeGroup> tradeGroups = new ArrayList<>();
 
     private final PropertyContainer qInfo = new PropertyContainer();
 
@@ -462,8 +462,8 @@ public class QuestInstance implements IQuest {
         return rewards;
     }
 
-    public List<TradeGroup> getTrades() {
-        return trades;
+    public List<TradeGroup> getTradeGroups() {
+        return tradeGroups;
     }
 
     @Nonnull
@@ -514,11 +514,11 @@ public class QuestInstance implements IQuest {
         jObj.setTag("preRequisites", tagList);
 
         NBTTagList tList = new NBTTagList();
-        for (TradeGroup tg : trades) {
+        for (TradeGroup tg : tradeGroups) {
             NBTTagCompound tag = tg.writeToNBT(new NBTTagCompound());
             tList.appendTag(tag);
         }
-        jObj.setTag("trades", tList);
+        jObj.setTag("tradeGroups", tList);
 
         return jObj;
     }
@@ -529,12 +529,12 @@ public class QuestInstance implements IQuest {
         this.tasks.readFromNBT(jObj.getTagList("tasks", 10), false);
         this.rewards.readFromNBT(jObj.getTagList("rewards", 10), false);
 
-        trades.clear();
-        NBTTagList tList = jObj.getTagList("trades", 10);
+        tradeGroups.clear();
+        NBTTagList tList = jObj.getTagList("tradeGroups", 10);
         for (int i = 0; i < tList.tagCount(); i++) {
             TradeGroup tg = new TradeGroup();
             tg.readFromNBT(tList.getCompoundTagAt(i));
-            trades.add(tg);
+            tradeGroups.add(tg);
         }
 
         // The legacy storage format used array indices to link together two separate list tags,
@@ -593,7 +593,7 @@ public class QuestInstance implements IQuest {
     }
 
     public NBTTagList writeTradeStateToNBT(NBTTagList nbt) {
-        for (TradeGroup tg : trades) {
+        for (TradeGroup tg : tradeGroups) {
             nbt.appendTag(tg.writeTradeStateToNBT(new NBTTagCompound()));
         }
         return nbt;
@@ -608,10 +608,10 @@ public class QuestInstance implements IQuest {
         if (nbt == null) {
             return;
         }
-        int iterSize = Math.min(trades.size(), nbt.tagCount());
+        int iterSize = Math.min(tradeGroups.size(), nbt.tagCount());
         for (int i = 0; i < iterSize; i++) {
             NBTTagCompound entry = (NBTTagCompound) nbt.getCompoundTagAt(i);
-            trades.get(i)
+            tradeGroups.get(i)
                 .readTradeStateFromNBT(entry);
         }
     }

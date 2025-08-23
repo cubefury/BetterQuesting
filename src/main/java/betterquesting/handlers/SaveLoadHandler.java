@@ -353,7 +353,7 @@ public class SaveLoadHandler {
             IQuest iquest = entry.getValue();
             if (iquest instanceof QuestInstance) {
                 QuestInstance qi = (QuestInstance) iquest;
-                if (!qi.getTrades()
+                if (!qi.getTradeGroups()
                     .isEmpty()) {
                     NBTTagCompound trade = new NBTTagCompound();
                     trade.setString(
